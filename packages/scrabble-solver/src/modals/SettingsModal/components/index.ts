@@ -5,3 +5,4 @@ export { InputModeSetting } from './InputModeSetting';
 export { LocaleSetting } from './LocaleSetting';
 export { ShowCoordinatesSetting } from './ShowCoordinatesSetting';
 export { RemoveCellFiltersSetting } from './RemoveCellFiltersSetting';
+export { ScoringSettings } from './ScoringSettings';

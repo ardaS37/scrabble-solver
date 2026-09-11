@@ -3,12 +3,14 @@ import store2 from 'store2';
 
 import { englishTranslations } from '@/i18n/i18n';
 import type { Rack, TranslationKey, Translations } from '@/types';
+import type { StarBonusState } from './starBonus';
 
 import type { SettingsState } from './settings/types';
 
 const BOARD = 'board';
 const RACK = 'rack';
 const SETTINGS = 'settings';
+const STAR_BONUS = 'star-bonus';
 const TRANSLATIONS = 'translations';
 
 interface PersistedTranslations {
@@ -19,12 +21,15 @@ interface PersistedTranslations {
 
 const LEGACY_KEYS: Record<keyof SettingsState, string> = {
   autoGroupTiles: 'auto-group-tiles',
+  firstMoveWordMultiplier: 'first-move-word-multiplier',
   game: 'config-id',
   highlightUnreachableCells: 'highlight-unreachable-cells',
   inputMode: 'input-mode',
   locale: 'locale',
   removeCellFilters: 'remove-cell-filters',
   showCoordinates: 'show-coordinates',
+  starBonusEnabled: 'star-bonus-enabled',
+  starBonusScore: 'star-bonus-score',
 };
 
 const store = store2.namespace('scrabble-solver');
@@ -72,6 +77,24 @@ export const localStorage = {
 
   setSettings(settings: SettingsState): void {
     store.set(SETTINGS, settings, true);
+  },
+
+  getStarBonus(): StarBonusState | undefined {
+    const starBonus = store.get(STAR_BONUS) as StarBonusState | undefined;
+
+    if (
+      starBonus !== null &&
+      (starBonus === undefined || !isObject(starBonus) || typeof starBonus.x !== 'number' || typeof starBonus.y !== 'number')
+    ) {
+      store.remove(STAR_BONUS);
+      return undefined;
+    }
+
+    return starBonus;
+  },
+
+  setStarBonus(starBonus: StarBonusState): void {
+    store.set(STAR_BONUS, starBonus, true);
   },
 
   getTranslations(locale: Locale, version: string): Translations | undefined {

@@ -1,11 +1,20 @@
 import { useEffect, useRef } from 'react';
 
-import { localStorage, selectBoard, selectIsHydrated, selectRack, selectSettings, useTypedSelector } from '@/state';
+import {
+  localStorage,
+  selectBoard,
+  selectIsHydrated,
+  selectRack,
+  selectSettings,
+  selectStarBonusCell,
+  useTypedSelector,
+} from '@/state';
 
 type WriteFlags = {
   board: boolean;
   rack: boolean;
   settings: boolean;
+  starBonus: boolean;
 };
 
 export const useLocalStorage = () => {
@@ -13,10 +22,12 @@ export const useLocalStorage = () => {
   const board = useTypedSelector(selectBoard);
   const rack = useTypedSelector(selectRack);
   const settings = useTypedSelector(selectSettings);
+  const starBonus = useTypedSelector(selectStarBonusCell);
   const hasSkippedFirstWrite = useRef<WriteFlags>({
     board: false,
     rack: false,
     settings: false,
+    starBonus: false,
   });
 
   useEffect(() => {
@@ -36,6 +47,12 @@ export const useLocalStorage = () => {
       localStorage.setSettings(settings);
     }
   }, [isHydrated, settings]);
+
+  useEffect(() => {
+    if (isHydrated && !isFirstWriteAfterHydration(hasSkippedFirstWrite.current, 'starBonus')) {
+      localStorage.setStarBonus(starBonus);
+    }
+  }, [isHydrated, starBonus]);
 };
 
 // Each effect's first post-hydration run would only write back what hydration just read, so it is skipped

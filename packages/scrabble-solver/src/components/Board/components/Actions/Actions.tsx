@@ -7,9 +7,18 @@ import { useIsTouchDevice } from '@/hooks/useIsTouchDevice';
 import Keyboard from '@/icons/Keyboard.svg';
 import Square from '@/icons/Square.svg';
 import SquareFill from '@/icons/SquareFill.svg';
+import Stars from '@/icons/Stars.svg';
 import { findCell } from '@/lib/findCell';
 import { isMac } from '@/lib/isMac';
-import { selectCellFilter, selectInputMode, selectResultCandidateCells, useTranslate, useTypedSelector } from '@/state';
+import {
+  selectCellFilter,
+  selectInputMode,
+  selectResultCandidateCells,
+  selectStarBonusCell,
+  selectStarBonusEnabled,
+  useTranslate,
+  useTypedSelector,
+} from '@/state';
 import { type Direction } from '@/types';
 
 import { Button } from '../../../Button';
@@ -25,11 +34,22 @@ interface Props extends HTMLProps<HTMLDivElement> {
   onEnterWord: MouseEventHandler<HTMLButtonElement>;
   onToggleBlank: MouseEventHandler<HTMLButtonElement>;
   onToggleFilterCell: MouseEventHandler<HTMLButtonElement>;
+  onToggleStarBonus: MouseEventHandler<HTMLButtonElement>;
 }
 
 export const Actions = forwardRef<HTMLDivElement, Props>(
   (
-    { cell, className, direction, onDirectionToggle, onEnterWord, onToggleBlank, onToggleFilterCell, ...props },
+    {
+      cell,
+      className,
+      direction,
+      onDirectionToggle,
+      onEnterWord,
+      onToggleBlank,
+      onToggleFilterCell,
+      onToggleStarBonus,
+      ...props
+    },
     ref,
   ) => {
     const translate = useTranslate();
@@ -39,6 +59,9 @@ export const Actions = forwardRef<HTMLDivElement, Props>(
     const resultCandidateCells = useTypedSelector(selectResultCandidateCells);
     const isBlank = cell.tile.isBlank;
     const isEmpty = cell.tile.character === EMPTY_CELL || Boolean(findCell(resultCandidateCells, cell.x, cell.y));
+    const starBonusEnabled = useTypedSelector(selectStarBonusEnabled);
+    const starBonusCell = useTypedSelector(selectStarBonusCell);
+    const isStarBonusCell = starBonusCell?.x === cell.x && starBonusCell.y === cell.y;
     const { Icon, labelTranslationKey } = getNextCellFilter(filter);
 
     // On iOS it helps with losing focus too early which makes Actions disappear
@@ -78,6 +101,17 @@ export const Actions = forwardRef<HTMLDivElement, Props>(
               </>
             }
             onClick={onToggleFilterCell}
+            onMouseDown={handleMouseDown}
+          />
+        )}
+
+        {starBonusEnabled && (isEmpty || isStarBonusCell) && (
+          <Button
+            aria-label={translate(isStarBonusCell ? 'cell.remove-star-bonus' : 'cell.set-star-bonus')}
+            className={styles.action}
+            Icon={Stars}
+            tooltip={translate(isStarBonusCell ? 'cell.remove-star-bonus' : 'cell.set-star-bonus')}
+            onClick={onToggleStarBonus}
             onMouseDown={handleMouseDown}
           />
         )}

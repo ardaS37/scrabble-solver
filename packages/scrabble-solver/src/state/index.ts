@@ -12,6 +12,7 @@ export * from './results';
 export * from './selectors';
 export * from './settings';
 export * from './solve';
+export * from './starBonus';
 export * from './store';
 export * from './useTranslate';
 export * from './useTypedSelector';

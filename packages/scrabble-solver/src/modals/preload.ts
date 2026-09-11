@@ -15,6 +15,7 @@ export function schedulePreloadModals(): void {
       import('./DictionaryModal'),
       import('./KeyMapModal'),
       import('./MenuModal'),
+      import('./PhotoScanModal'),
       import('./RemainingTilesModal'),
       import('./ResultsModal'),
       import('./SettingsModal'),

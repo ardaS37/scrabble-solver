@@ -19,6 +19,11 @@ export const selectSettings = (state: RootState) => state.settings;
 
 export const selectAutoGroupTiles = createSelector([selectSettings], (settings) => settings.autoGroupTiles);
 
+export const selectFirstMoveWordMultiplier = createSelector(
+  [selectSettings],
+  (settings) => settings.firstMoveWordMultiplier,
+);
+
 export const selectGame = createSelector([selectSettings], (settings) => settings.game);
 
 export const selectHighlightUnreachableCells = createSelector(
@@ -39,6 +44,10 @@ export const selectLocaleAutoGroupTiles = createSelector([selectLocale, selectSe
 });
 
 export const selectShowCoordinates = createSelector([selectSettings], (settings) => settings.showCoordinates);
+
+export const selectStarBonusEnabled = createSelector([selectSettings], (settings) => settings.starBonusEnabled);
+
+export const selectStarBonusScore = createSelector([selectSettings], (settings) => settings.starBonusScore);
 
 export const selectConfig = createSelector([selectGame, selectLocale], getConfig);
 

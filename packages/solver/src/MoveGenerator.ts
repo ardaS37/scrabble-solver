@@ -10,6 +10,8 @@ import {
   isScoreBingo,
 } from '@scrabble-solver/types';
 
+import { type ScoringOptions } from './solve';
+
 const MAX_ALPHABET_SIZE = 64;
 
 // The result sort key packs (direction, line, start, end) into one integer.
@@ -105,6 +107,7 @@ export class MoveGenerator {
   private readonly digraphs: string[];
   private readonly blankScore: number;
   private readonly rackSize: number;
+  private readonly scoringOptions?: ScoringOptions;
 
   // Single-tile placements are the only ones both passes can emit; multi-tile
   // placements determine their line, span, and anchor uniquely.
@@ -124,7 +127,7 @@ export class MoveGenerator {
   private readonly alphaFirstRackIndex: Int32Array;
   private blankRackIndex = 0;
 
-  constructor(gaddag: Gaddag, config: Config, board: Board, tiles: Tile[]) {
+  constructor(gaddag: Gaddag, config: Config, board: Board, tiles: Tile[], scoringOptions?: ScoringOptions) {
     this.gaddag = gaddag;
     this.config = config;
     this.width = board.columnsCount;
@@ -132,6 +135,7 @@ export class MoveGenerator {
     this.cellsCount = this.width * this.height;
     this.blankScore = config.blankScore;
     this.rackSize = config.rackSize;
+    this.scoringOptions = scoringOptions;
     this.digraphs = config.twoCharacterTiles;
 
     const alphabet = config.alphabet;
@@ -864,6 +868,10 @@ export class MoveGenerator {
 
     let points = mainScore * wordMultiplier + collisionsScore;
 
+    if (this.boardIsEmpty) {
+      points *= this.scoringOptions?.firstMoveWordMultiplier ?? 1;
+    }
+
     if (this.placedCount === this.rackSize) {
       const bingo = this.config.bingo;
 
@@ -872,6 +880,10 @@ export class MoveGenerator {
       } else if (isMultiplierBingo(bingo)) {
         points = mainScore * wordMultiplier * bingo.multiplier + collisionsScore;
       }
+    }
+
+    if (this.placedOnStar(startPosition, endPosition, lineBase)) {
+      points += this.scoringOptions?.starBonus?.score ?? 0;
     }
 
     let rankKey = '';
@@ -896,6 +908,26 @@ export class MoveGenerator {
       x: this.isHorizontal ? startPosition : this.line,
       y: this.isHorizontal ? this.line : startPosition,
     });
+  }
+
+  private placedOnStar(startPosition: number, endPosition: number, lineBase: number): boolean {
+    const starBonus = this.scoringOptions?.starBonus;
+
+    if (!starBonus) {
+      return false;
+    }
+
+    const starIndex = starBonus.y * this.width + starBonus.x;
+
+    for (let position = startPosition; position <= endPosition; ++position) {
+      const passIndex = lineBase + position;
+
+      if (this.passGlobal[passIndex] === starIndex && this.passFilled[passIndex] === 0) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   private hasInvalidDigraph(startPosition: number, endPosition: number): boolean {

@@ -43,6 +43,9 @@ const KeyMapModal = dynamic(() => import('@/modals/KeyMapModal').then((module) =
 const MenuModal = dynamic(() => import('@/modals/MenuModal').then((module) => module.MenuModal), {
   ssr: false,
 });
+const PhotoScanModal = dynamic(() => import('@/modals/PhotoScanModal').then((module) => module.PhotoScanModal), {
+  ssr: false,
+});
 const RemainingTilesModal = dynamic(
   () => import('@/modals/RemainingTilesModal').then((module) => module.RemainingTilesModal),
   {
@@ -87,7 +90,7 @@ interface Props {
   version: string;
 }
 
-type Modal = 'dictionary' | 'keyMap' | 'menu' | 'remainingTiles' | 'results' | 'settings' | 'words';
+type Modal = 'dictionary' | 'keyMap' | 'menu' | 'photoScan' | 'remainingTiles' | 'results' | 'settings' | 'words';
 
 const Index: FunctionComponent<Props> = ({ version }) => {
   const dispatch = useDispatch();
@@ -100,6 +103,7 @@ const Index: FunctionComponent<Props> = ({ version }) => {
     dictionary: false,
     keyMap: false,
     menu: false,
+    photoScan: false,
     remainingTiles: false,
     results: false,
     settings: false,
@@ -132,6 +136,7 @@ const Index: FunctionComponent<Props> = ({ version }) => {
   const handleShowDictionary = useCallback(() => patchModals({ dictionary: true }), [patchModals]);
   const handleShowKeyMap = useCallback(() => patchModals({ keyMap: true }), [patchModals]);
   const handleShowMenu = useCallback(() => patchModals({ menu: true }), [patchModals]);
+  const handleShowPhotoScan = useCallback(() => patchModals({ photoScan: true }), [patchModals]);
   const handleShowRemainingTiles = useCallback(() => patchModals({ remainingTiles: true }), [patchModals]);
   const handleShowResults = useCallback(() => patchModals({ results: true }), [patchModals]);
   const handleShowSettings = useCallback(() => patchModals({ settings: true }), [patchModals]);
@@ -139,6 +144,7 @@ const Index: FunctionComponent<Props> = ({ version }) => {
   const handleCloseDictionary = useCallback(() => patchModals({ dictionary: false }), [patchModals]);
   const handleCloseKeyMap = useCallback(() => patchModals({ keyMap: false }), [patchModals]);
   const handleCloseMenu = useCallback(() => patchModals({ menu: false }), [patchModals]);
+  const handleClosePhotoScan = useCallback(() => patchModals({ photoScan: false }), [patchModals]);
   const handleCloseRemainingTiles = useCallback(() => patchModals({ remainingTiles: false }), [patchModals]);
   const handleCloseResults = useCallback(() => patchModals({ results: false }), [patchModals]);
   const handleCloseSettings = useCallback(() => patchModals({ settings: false }), [patchModals]);
@@ -206,6 +212,7 @@ const Index: FunctionComponent<Props> = ({ version }) => {
             onClear={handleClear}
             onShowKeyMap={handleShowKeyMap}
             onShowMenu={handleShowMenu}
+            onShowPhotoScan={handleShowPhotoScan}
             onShowRemainingTiles={handleShowRemainingTiles}
             onShowSettings={handleShowSettings}
             onShowWords={handleShowWords}
@@ -230,6 +237,8 @@ const Index: FunctionComponent<Props> = ({ version }) => {
           onShowWords={handleShowWords}
         />
       )}
+
+      {mountedModals.photoScan && <PhotoScanModal isOpen={modals.photoScan} onClose={handleClosePhotoScan} />}
 
       {mountedModals.settings && <SettingsModal isOpen={modals.settings} onClose={handleCloseSettings} />}
 

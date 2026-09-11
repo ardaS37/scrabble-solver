@@ -5,6 +5,7 @@ import CardChecklist from '@/icons/CardChecklist.svg';
 import Cog from '@/icons/Cog.svg';
 import Eraser from '@/icons/Eraser.svg';
 import Github from '@/icons/Github.svg';
+import Image from '@/icons/Image.svg';
 import KeyboardFill from '@/icons/KeyboardFill.svg';
 import List from '@/icons/List.svg';
 import Sack from '@/icons/Sack.svg';
@@ -18,6 +19,7 @@ import { selectHasInvalidWords, selectHasOverusedTiles } from './selectors';
 
 interface Props {
   onClear: () => void;
+  onShowPhotoScan: () => void;
   onShowKeyMap: () => void;
   onShowMenu: () => void;
   onShowRemainingTiles: () => void;
@@ -27,6 +29,7 @@ interface Props {
 
 const NavButtonsBase: FunctionComponent<Props> = ({
   onClear,
+  onShowPhotoScan,
   onShowKeyMap,
   onShowMenu,
   onShowRemainingTiles,
@@ -53,6 +56,14 @@ const NavButtonsBase: FunctionComponent<Props> = ({
       <div className={styles.separator} />
 
       <div className={classNames(styles.group, styles.fullNav)}>
+        <IconButton
+          aria-label={translate('photo-scan')}
+          className={styles.button}
+          Icon={Image}
+          tooltip={translate('photo-scan')}
+          onClick={onShowPhotoScan}
+        />
+
         {config.supportsRemainingTiles && (
           <IconButton
             aria-label={translate('remaining-tiles')}

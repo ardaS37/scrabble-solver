@@ -3,8 +3,10 @@ import { type BoardJson, type Game, type Locale } from '@scrabble-solver/types';
 export interface SolveRequestPayload {
   board: BoardJson;
   characters: string[];
+  firstMoveWordMultiplier?: number;
   game: Game;
   locale: Locale;
+  starBonus?: { score: number; x: number; y: number };
 }
 
 export interface VerifyRequestPayload {

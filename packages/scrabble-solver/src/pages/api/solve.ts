@@ -2,7 +2,7 @@ import { getConfig, hasConfig } from '@scrabble-solver/configs';
 import { BLANK } from '@scrabble-solver/constants';
 import { dictionaries } from '@scrabble-solver/dictionaries';
 import { logEvent } from '@scrabble-solver/logger';
-import { solve as solveScrabble } from '@scrabble-solver/solver';
+import { solve as solveScrabble, type ScoringOptions } from '@scrabble-solver/solver';
 import {
   Board,
   type Config,
@@ -24,15 +24,16 @@ interface RequestData {
   config: Config;
   game: Game;
   locale: Locale;
+  scoringOptions: ScoringOptions;
 }
 
 export default withApiLog('solve', solve);
 
 async function solve(request: NextApiRequest, response: NextApiResponse, { ip, getElapsedMs }: ApiContext) {
-  const { board, characters, config, game, locale } = parseRequest(request);
+  const { board, characters, config, game, locale, scoringOptions } = parseRequest(request);
   const gaddag = await dictionaries.get(locale);
   const tiles = characters.map((character) => new Tile({ character, isBlank: character === BLANK }));
-  const results = solveScrabble(gaddag, config, board, tiles);
+  const results = solveScrabble(gaddag, config, board, tiles, scoringOptions);
   response.status(200).send(results);
 
   logEvent({
@@ -49,7 +50,7 @@ async function solve(request: NextApiRequest, response: NextApiResponse, { ip, g
 }
 
 function parseRequest(request: NextApiRequest): RequestData {
-  const { board: boardJson, characters, game, locale } = request.body;
+  const { board: boardJson, characters, firstMoveWordMultiplier, game, locale, starBonus } = request.body;
 
   if (!isLocale(locale)) {
     throw new BadRequestError('Invalid "locale" parameter');
@@ -86,6 +87,25 @@ function parseRequest(request: NextApiRequest): RequestData {
   }
 
   const board = Board.fromJson(boardJson);
+  const scoringOptions: ScoringOptions = {};
+
+  if (firstMoveWordMultiplier === 2) {
+    scoringOptions.firstMoveWordMultiplier = 2;
+  }
+
+  if (
+    starBonus &&
+    typeof starBonus.score === 'number' &&
+    Number.isFinite(starBonus.score) &&
+    Number.isInteger(starBonus.x) &&
+    Number.isInteger(starBonus.y) &&
+    starBonus.x >= 0 &&
+    starBonus.x < config.boardWidth &&
+    starBonus.y >= 0 &&
+    starBonus.y < config.boardHeight
+  ) {
+    scoringOptions.starBonus = { score: Math.max(0, Math.round(starBonus.score)), x: starBonus.x, y: starBonus.y };
+  }
 
   return {
     board,
@@ -93,6 +113,7 @@ function parseRequest(request: NextApiRequest): RequestData {
     config,
     game,
     locale,
+    scoringOptions,
   };
 }
 

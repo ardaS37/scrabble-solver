@@ -1,0 +1,1 @@
+export { ScoringSettings } from './ScoringSettings';

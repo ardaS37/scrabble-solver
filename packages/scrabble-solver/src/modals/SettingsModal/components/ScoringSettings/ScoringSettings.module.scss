@@ -1,0 +1,35 @@
+.settings {
+  display: grid;
+  gap: var(--spacing--m);
+}
+
+.radioGroup {
+  display: grid;
+  gap: var(--spacing--s);
+}
+
+.label,
+.score > span {
+  font-size: 0.9em;
+  font-weight: 600;
+}
+
+.radios {
+  display: flex;
+  gap: var(--spacing--l);
+}
+
+.score {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing--m);
+}
+
+.score input {
+  width: 5.5em;
+  padding: var(--spacing--s);
+  border: var(--border);
+  border-radius: var(--border--radius);
+  font: inherit;
+}

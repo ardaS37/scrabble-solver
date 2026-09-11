@@ -21,8 +21,9 @@ import {
 
 import Ban from '@/icons/Ban.svg';
 import FlagFill from '@/icons/FlagFill.svg';
+import Stars from '@/icons/Stars.svg';
 import { getCoordinate } from '@/lib/getCoordinate';
-import { type CellFilter, type Translate } from '@/types';
+import { type CellFilter, type Point, type Translate } from '@/types';
 
 import styles from './Board.module.scss';
 import { Cell } from './components';
@@ -39,6 +40,7 @@ interface Props {
   reachableCells: boolean[][] | null;
   rows: CellModel[][];
   showCoordinates: ShowCoordinates;
+  starBonusCell: Point | null;
   style?: CSSProperties;
   translate: Translate;
   onBlur: FocusEventHandler;
@@ -62,6 +64,7 @@ const BoardPureBase = forwardRef<HTMLDivElement, Props>(
       reachableCells,
       rows,
       showCoordinates,
+      starBonusCell,
       style,
       translate,
       onBlur,
@@ -113,6 +116,21 @@ const BoardPureBase = forwardRef<HTMLDivElement, Props>(
           </div>
         );
       })}
+
+      {starBonusCell && (
+        <div
+          className={styles.starBonus}
+          style={{
+            left: direction === 'ltr' ? inlineOffset(starBonusCell.x) : undefined,
+            right: direction === 'rtl' ? inlineOffset(starBonusCell.x) : undefined,
+            top: inlineOffset(starBonusCell.y),
+          }}
+        >
+          <div className={styles.starBonusBackground}>
+            <Stars aria-hidden="true" className={styles.starBonusIcon} role="img" />
+          </div>
+        </div>
+      )}
 
       {rows.map((cells, y) => (
         <Fragment key={y}>

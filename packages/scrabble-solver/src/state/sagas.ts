@@ -36,6 +36,7 @@ import {
   settingsSlice,
   type SettingsState,
 } from './settings';
+import { selectStarBonusCell, starBonusSlice } from './starBonus';
 import { guessLocale } from './settings/lib';
 import { solveSlice } from './solve';
 import { verifySlice } from './verify';
@@ -56,6 +57,15 @@ export function* rootSaga(): AnyGenerator {
   yield takeLatest([hoveredWordSlice.actions.set.type, hoveredWordSlice.actions.clear.type], onHoveredWordChange);
   yield takeEvery(settingsSlice.actions.changeGame.type, onGameChange);
   yield takeEvery(settingsSlice.actions.changeLocale.type, onLocaleChange);
+  yield takeLatest([starBonusSlice.actions.set.type, starBonusSlice.actions.clear.type], onScoringOptionChange);
+  yield takeLatest(
+    [
+      settingsSlice.actions.changeFirstMoveWordMultiplier.type,
+      settingsSlice.actions.changeStarBonusEnabled.type,
+      settingsSlice.actions.changeStarBonusScore.type,
+    ],
+    onScoringOptionChange,
+  );
   yield takeLatest(dictionarySlice.actions.submit.type, onDictionarySubmit);
   yield takeLatest(initialize.type, onInitialize);
   yield takeLatest(reset.type, onReset);
@@ -104,6 +114,7 @@ function* onGameChange(): AnyGenerator {
 
   yield put(resultsSlice.actions.reset());
   yield put(hoveredWordSlice.actions.clear());
+  yield put(starBonusSlice.actions.clear());
   yield* resetRack();
   yield put(verifySlice.actions.submit());
 }
@@ -171,6 +182,11 @@ function* hydratePersistedState(version: string): AnyGenerator {
   }
 
   yield put(settingsSlice.actions.init(settings));
+  const starBonus = localStorage.getStarBonus();
+
+  if (starBonus) {
+    yield put(starBonusSlice.actions.set(starBonus));
+  }
   yield* hydratePersistedTranslations(settings.locale, version);
 
   const config = yield select(selectConfig);
@@ -265,6 +281,7 @@ function* onReset(): AnyGenerator {
   yield put(rackSlice.actions.reset());
   yield put(resultsSlice.actions.reset());
   yield put(solveSlice.actions.reset());
+  yield put(starBonusSlice.actions.clear());
   yield put(verifySlice.actions.submit());
 }
 
@@ -337,6 +354,10 @@ function* onSolve(): AnyGenerator {
   const { config } = yield select(selectConfig);
   const locale = yield select(selectLocale);
   const characters = yield select(selectCharacters);
+  const starBonus = yield select(selectStarBonusCell);
+  const starBonusEnabled = yield select((state) => state.settings.starBonusEnabled);
+  const starBonusScore = yield select((state) => state.settings.starBonusScore);
+  const firstMoveWordMultiplier = yield select((state) => state.settings.firstMoveWordMultiplier);
 
   if (characters.length === 0) {
     yield put(solveSlice.actions.submitSuccess({ board, characters }));
@@ -348,14 +369,24 @@ function* onSolve(): AnyGenerator {
     const results = yield call(solve, {
       board: board.toJson(),
       characters,
+      firstMoveWordMultiplier: firstMoveWordMultiplier ? 2 : undefined,
       game: config.game,
       locale,
+      starBonus: starBonusEnabled && starBonus ? { ...starBonus, score: starBonusScore } : undefined,
     });
     yield put(resultsSlice.actions.changeResults(results));
     yield put(solveSlice.actions.submitSuccess({ board, characters }));
   } catch (error) {
     yield put(resultsSlice.actions.changeResults([]));
     yield put(solveSlice.actions.submitFailure(error));
+  }
+}
+
+function* onScoringOptionChange(): AnyGenerator {
+  const characters = yield select(selectCharacters);
+
+  if (characters.length > 0) {
+    yield put(solveSlice.actions.submit());
   }
 }
 

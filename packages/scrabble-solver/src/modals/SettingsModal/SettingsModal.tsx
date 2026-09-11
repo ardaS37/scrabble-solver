@@ -12,6 +12,7 @@ import {
   LocaleSetting,
   ShowCoordinatesSetting,
   RemoveCellFiltersSetting,
+  ScoringSettings,
 } from './components';
 
 interface Props {
@@ -57,6 +58,10 @@ const SettingsModalBase: FunctionComponent<Props> = ({ className, isOpen, onClos
         title={translate('settings.highlightUnreachableCells')}
       >
         <HighlightUnreachableCellsSetting disabled={!isOpen} />
+      </Modal.Section>
+
+      <Modal.Section label={translate('settings.scoring')} title={translate('settings.scoring')}>
+        <ScoringSettings disabled={!isOpen} />
       </Modal.Section>
     </Modal>
   );

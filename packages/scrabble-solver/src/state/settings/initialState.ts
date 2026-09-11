@@ -7,10 +7,13 @@ import type { SettingsState } from './types';
  */
 export const settingsInitialState: SettingsState = {
   autoGroupTiles: null,
+  firstMoveWordMultiplier: false,
   game: Game.Scrabble,
   highlightUnreachableCells: false,
   inputMode: 'keyboard',
   locale: Locale.EN_US,
   removeCellFilters: 'always',
   showCoordinates: 'original',
+  starBonusEnabled: false,
+  starBonusScore: 30,
 };

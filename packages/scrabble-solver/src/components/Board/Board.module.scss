@@ -53,6 +53,33 @@
   user-select: none;
 }
 
+.starBonus {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--cell-size);
+  height: var(--cell-size);
+  pointer-events: none;
+  user-select: none;
+}
+
+.starBonusBackground {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80%;
+  height: 80%;
+  border-radius: var(--border--radius);
+  background-color: #8b4aa2;
+}
+
+.starBonusIcon {
+  width: 52%;
+  height: 52%;
+  color: var(--color--white);
+}
+
 .iconBackground,
 .icon {
   position: absolute;

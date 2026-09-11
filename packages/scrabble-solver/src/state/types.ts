@@ -9,6 +9,7 @@ import type { RackState } from './rack';
 import type { ResultsState } from './results';
 import type { SettingsState } from './settings';
 import type { SolveState } from './solve';
+import type { StarBonusState } from './starBonus';
 import type { VerifyState } from './verify';
 
 export type RootState = {
@@ -23,5 +24,6 @@ export type RootState = {
   results: ResultsState;
   settings: SettingsState;
   solve: SolveState;
+  starBonus: StarBonusState;
   verify: VerifyState;
 };

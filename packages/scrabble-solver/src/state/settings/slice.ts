@@ -14,6 +14,10 @@ export const settingsSlice = createSlice({
       return { ...state, autoGroupTiles };
     },
 
+    changeFirstMoveWordMultiplier: (state, action: PayloadAction<boolean>) => {
+      return { ...state, firstMoveWordMultiplier: action.payload };
+    },
+
     changeGame: (state, action: PayloadAction<Game>) => {
       const game = action.payload;
       return { ...state, game };
@@ -37,6 +41,14 @@ export const settingsSlice = createSlice({
     changeShowCoordinates: (state, action: PayloadAction<ShowCoordinates>) => {
       const showCoordinates = action.payload;
       return { ...state, showCoordinates };
+    },
+
+    changeStarBonusEnabled: (state, action: PayloadAction<boolean>) => {
+      return { ...state, starBonusEnabled: action.payload };
+    },
+
+    changeStarBonusScore: (state, action: PayloadAction<number>) => {
+      return { ...state, starBonusScore: Math.max(0, Math.round(action.payload) || 0) };
     },
 
     changeRemoveCellFilters: (state, action: PayloadAction<RemoveCellFilters>) => {

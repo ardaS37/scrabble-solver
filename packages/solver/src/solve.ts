@@ -3,6 +3,23 @@ import { type Board, type Config, type ResultJson, type Tile } from '@scrabble-s
 
 import { MoveGenerator } from './MoveGenerator';
 
-export const solve = (gaddag: Gaddag, config: Config, board: Board, tiles: Tile[]): ResultJson[] => {
-  return new MoveGenerator(gaddag, config, board, tiles).run();
+export interface StarBonus {
+  score: number;
+  x: number;
+  y: number;
+}
+
+export interface ScoringOptions {
+  firstMoveWordMultiplier?: number;
+  starBonus?: StarBonus;
+}
+
+export const solve = (
+  gaddag: Gaddag,
+  config: Config,
+  board: Board,
+  tiles: Tile[],
+  scoringOptions?: ScoringOptions,
+): ResultJson[] => {
+  return new MoveGenerator(gaddag, config, board, tiles, scoringOptions).run();
 };

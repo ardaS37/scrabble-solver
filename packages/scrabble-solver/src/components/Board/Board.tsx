@@ -17,6 +17,8 @@ import {
   selectInputMode,
   selectLocale,
   selectShowCoordinates,
+  selectStarBonusCell,
+  starBonusSlice,
   solveSlice,
   useTranslate,
   useTypedSelector,
@@ -44,6 +46,7 @@ export const Board: FunctionComponent<Props> = ({ className }) => {
   const cellFilters = useTypedSelector(selectCellFilters);
   const showCoordinates = useTypedSelector(selectShowCoordinates);
   const hoveredCharacter = useTypedSelector(selectHoveredCharacter);
+  const starBonusCell = useTypedSelector(selectStarBonusCell);
   const [
     { activeIndex, direction, inputRefs },
     { insertValue, onChange, onDirectionToggle, onFocus, onKeyDown, onPaste },
@@ -137,6 +140,19 @@ export const Board: FunctionComponent<Props> = ({ className }) => {
     dispatch(cellFiltersSlice.actions.toggle(cell));
   }, [cell, dispatch, inputMode, inputRef]);
 
+  const handleToggleStarBonus = useCallback(() => {
+    if (inputMode === 'keyboard') {
+      inputRef.current?.focus();
+    }
+
+    if (starBonusCell?.x === cell.x && starBonusCell.y === cell.y) {
+      dispatch(starBonusSlice.actions.clear());
+      return;
+    }
+
+    dispatch(starBonusSlice.actions.set({ x: cell.x, y: cell.y }));
+  }, [cell.x, cell.y, dispatch, inputMode, inputRef, starBonusCell]);
+
   const ref = useOnclickOutside(() => setHasFocus(false), {
     ignoreClass: [styles.floating],
   });
@@ -156,6 +172,7 @@ export const Board: FunctionComponent<Props> = ({ className }) => {
         ref={ref}
         rows={rows}
         showCoordinates={showCoordinates}
+        starBonusCell={starBonusCell}
         style={boardStyle}
         translate={translate}
         onBlur={handleBlur}
@@ -197,6 +214,7 @@ export const Board: FunctionComponent<Props> = ({ className }) => {
             onEnterWord={handleEnterWord}
             onToggleBlank={handleToggleBlank}
             onToggleFilterCell={handleToggleFilterCell}
+            onToggleStarBonus={handleToggleStarBonus}
           />
         )}
 

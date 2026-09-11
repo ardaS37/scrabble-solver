@@ -13,6 +13,7 @@ import { resultsSlice } from './results';
 import { rootSaga } from './sagas';
 import { settingsSlice } from './settings';
 import { solveSlice } from './solve';
+import { starBonusSlice } from './starBonus';
 import { verifySlice } from './verify';
 
 const sagaMiddleware = reduxSaga();
@@ -30,6 +31,7 @@ export const store = configureStore({
     results: resultsSlice.reducer,
     settings: settingsSlice.reducer,
     solve: solveSlice.reducer,
+    starBonus: starBonusSlice.reducer,
     verify: verifySlice.reducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false }).concat([sagaMiddleware]),
